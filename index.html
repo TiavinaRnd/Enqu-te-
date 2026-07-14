@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enquête sur mémoire Tiavina</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Spectral+SC:wght@600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#21201C;
+    --ink-soft:#4A473E;
+    --paper:#EFE6D0;
+    --paper-light:#F8F3E6;
+    --ledger-blue:#1B3A4B;
+    --ledger-blue-light:#2C5468;
+    --stamp-red:#A6402C;
+    --sage:#7C9473;
+    --line: rgba(33,32,28,0.18);
+    --line-strong: rgba(33,32,28,0.35);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    background-image:
+      repeating-linear-gradient(transparent, transparent 38px, var(--line) 39px);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:16px;
+    line-height:1.55;
+    min-height:100vh;
+  }
+  .wrap{max-width:680px;margin:0 auto;padding:0 20px 80px;}
+
+  /* ---------- HEADER / HERO ---------- */
+  header.hero{
+    padding:48px 0 32px;
+    position:relative;
+    border-bottom:2px solid var(--ink);
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--ledger-blue);
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:18px;
+  }
+  h1{
+    font-family:'Spectral', serif;
+    font-weight:600;
+    font-size:clamp(28px,6vw,40px);
+    line-height:1.15;
+    margin:0 0 14px;
+    color:var(--ink);
+  }
+  .hero p.lead{
+    font-size:16px;
+    color:var(--ink-soft);
+    max-width:52ch;
+    margin:0 0 20px;
+  }
+  .logo-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:28px;
+  }
+  .logo-group{ display:flex; align-items:center; gap:18px; }
+  .logo-img{
+    height:56px;
+    width:auto;
+    object-fit:contain;
+    border-radius: 10px;
+  }
+  @media (max-width:520px){
+    .logo-row{ flex-wrap:wrap; gap:16px; }
+    .logo-img{ height:42px; }
+  }
+
+  .meta-row{
+    display:flex;
+    gap:22px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    flex-wrap:wrap;
+  }
+  .meta-row strong{color:var(--ink);}
+
+  /* ---------- FOLIO PROGRESS ---------- */
+  .folio-bar{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin:28px 0 0;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.06em;
+    color:var(--ink-soft);
+  }
+  .folio-track{
+    flex:1;
+    height:1px;
+    background:var(--line-strong);
+    position:relative;
+  }
+  .folio-fill{
+    position:absolute;left:0;top:-1.5px;
+    height:4px;
+    background:var(--stamp-red);
+    transition:width .35s ease;
+  }
+
+  /* ---------- SECTIONS ---------- */
+  .card{
+    background:var(--paper-light);
+    border:1px solid var(--line-strong);
+    padding:34px 28px;
+    margin-top:28px;
+  }
+  .step{ display:none; }
+  .step.active{ display:block; animation:fadeIn .3s ease; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  .chapter-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--stamp-red);
+    margin-bottom:8px;
+  }
+  h2.step-title{
+    font-family:'Spectral', serif;
+    font-size:24px;
+    font-weight:600;
+    margin:0 0 22px;
+    padding-bottom:14px;
+    border-bottom:1px solid var(--line);
+  }
+
+  .field{ margin-bottom:26px; }
+  .field:last-child{ margin-bottom:0; }
+  .field > label.q{
+    display:block;
+    font-weight:500;
+    margin-bottom:10px;
+    font-size:15px;
+  }
+  .req{ color:var(--stamp-red); font-size:13px; }
+
+  .options{ display:flex; flex-direction:column; gap:8px; }
+  .opt{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 14px;
+    border:1px solid var(--line-strong);
+    background:var(--paper-light);
+    cursor:pointer;
+    transition:border-color .15s, background .15s;
+  }
+  .opt:hover{ border-color:var(--ledger-blue); }
+  .opt input{ accent-color:var(--ledger-blue); width:16px; height:16px; flex-shrink:0; }
+  .opt.checked{ border-color:var(--stamp-red); background:#F1E4D3; }
+
+  .scale{ display:flex; gap:8px; }
+  .scale label{
+    flex:1;
+    text-align:center;
+    border:1px solid var(--line-strong);
+    padding:10px 4px;
+    cursor:pointer;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+  }
+  .scale input{ display:none; }
+  .scale input:checked + span{ font-weight:600; }
+  .scale label.checked{ border-color:var(--stamp-red); background:#F1E4D3; }
+  .scale-labels{
+    display:flex; justify-content:space-between;
+    font-size:11px; color:var(--ink-soft); margin-top:6px;
+  }
+
+  input[type=text], input[type=email], textarea{
+    width:100%;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:15px;
+    padding:11px 12px;
+    border:1px solid var(--line-strong);
+    background:var(--paper-light);
+    color:var(--ink);
+  }
+  input[type=text]:focus, input[type=email]:focus, textarea:focus{
+    outline:2px solid var(--ledger-blue);
+    outline-offset:1px;
+  }
+  textarea{ resize:vertical; min-height:90px; }
+  .hint{ font-size:12.5px; color:var(--ink-soft); margin-top:6px; }
+
+  /* ---------- NAV ---------- */
+  .nav-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:34px;
+  }
+  button{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    padding:12px 22px;
+    border:1px solid var(--ink);
+    background:transparent;
+    color:var(--ink);
+    cursor:pointer;
+    transition:background .15s, color .15s;
+  }
+  button.primary{ background:var(--ledger-blue); border-color:var(--ledger-blue); color:var(--paper-light); }
+  button.primary:hover{ background:var(--ledger-blue-light); }
+  button.ghost:hover{ background:var(--ink); color:var(--paper-light); }
+  button:disabled{ opacity:0.35; cursor:not-allowed; }
+  button.ghost:disabled:hover{ background:transparent; color:var(--ink); }
+
+  .error-msg{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--stamp-red);
+    margin-top:10px;
+    display:none;
+  }
+
+  .field.invalid .q{ color:var(--stamp-red); }
+  .field.invalid input[type=text],
+  .field.invalid input[type=email]{ border-color:var(--stamp-red); }
+  .field.invalid .options .opt{ border-color:var(--stamp-red); }
+  .field.invalid .scale label{ border-color:var(--stamp-red); }
+
+  .branch{
+    display:none;
+    margin-top:20px;
+    padding-left:18px;
+    border-left:2px dashed var(--line-strong);
+  }
+  .branch .branch{
+    margin-top:22px;
+  }
+  .field-error{
+    display:none;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--stamp-red);
+    margin-top:8px;
+  }
+  .field.invalid .field-error{ display:block; }
+
+  /* ---------- CONFIRMATION ---------- */
+  #confirm{ display:none; text-align:center; padding:60px 20px; }
+  #confirm .stamp-big{ width:120px; height:120px; margin:0 auto 24px; }
+  #confirm h2{ font-family:'Spectral', serif; font-size:28px; margin:0 0 10px; }
+  #confirm p{ color:var(--ink-soft); max-width:44ch; margin:0 auto; }
+
+  footer.sitefoot{
+    text-align:center;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-top:40px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="logo-row">
+      <div class="logo-group logo-left">
+        <img src="Capture d’écran 2026-06-05 204157.png" alt="Logo université" class="logo-img">
+      </div>
+      <div class="logo-group logo-right">
+        <img src="Science de la gestion.png" alt="Logo du parcours" class="logo-img">
+      </div>
+    </div>
+
+    <div class="eyebrow">
+      <span>RANDRIANOMENA Tiavina Luciano</span>
+      <span>Recherche pour mémoire licence</span>
+    </div>
+    <h1>Audit comptable et conformité fiscale à Madagascar</h1>
+    <p class="lead">Dans le cadre de mon mémoire universitaire, je réalise une enquête afin de mieux comprendre les besoins et les avis des utilisateurs. Ce questionnaire est ouvert à tous: chefs d'entreprise, particuliers, étudiants, ... . <br> Votre participation est précieuse. Toutes les réponses resteront strictement anonymes et seront utiliées uniquement à des fins académiques.</p>
+    <div class="meta-row">
+      <span>Enquête basée à la <strong>Région Itasy</strong>_______________________<strong>Durée</strong> — env. 5 minutes</span>
+    </div>
+
+    <div class="folio-bar">
+      <span id="folio-label">Page 1/5</span>
+      <div class="folio-track"><div class="folio-fill" id="folio-fill" style="width:20%"></div></div>
+    </div>
+  </header>
+
+  <form id="survey-form">
+
+    <!-- STEP 1 -->
+    <div class="card step active" data-step="1">
+      <div class="chapter-tag">Identification</div>
+      <h2 class="step-title">À propos de vous</h2>
+
+      <div class="field">
+        <label class="q">Vous êtes… <span class="req">*</span></label>
+        <div class="options" data-group="profil">
+          <label class="opt"><input type="radio" name="profil" value="Entrepreneur ou chef d'entreprise" required><span>Entrepreneur ou chef d'entreprise</span></label>
+          <label class="opt"><input type="radio" name="profil" value="Salarié"><span>Salarié</span></label>
+          <label class="opt"><input type="radio" name="profil" value="Professionnel libéral"><span>Professionnel libéral</span></label>
+          <label class="opt"><input type="radio" name="profil" value="utres contribuables"><span>Autres contribuables</span></label>
+          <label class="opt"><input type="radio" name="profil" value="Étudiant(e) ayant la notion sur la comptabilité et fiscalité"><span>Étudiant(e) ayant la notion sur la comptabilité et fiscalité</span></label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="q">Taille de l'entreprise <span class="req">*</span></label>
+        <div class="options" data-group="age">
+          <label class="opt"><input type="radio" name="age" value="Moins de 20 ans" required><span>Entreprise individuelle (EI)</span></label>
+          <label class="opt"><input type="radio" name="age" value="20–29 ans"><span>Petite entreprise (PE)</span></label>
+          <label class="opt"><input type="radio" name="age" value="30–44 ans"><span>Moyenne entreprise (ME)</span></label>
+          <label class="opt"><input type="radio" name="age" value="45–59 ans"><span>Grande entreprise (GE)</span></label>
+          <label class="opt"><input type="radio" name="age" value="60 ans et plus"><span>Étudiant(e)</span></label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="q" for="region">Lieu d'exploitation ou résidence<span class="req">*</span></label>
+        <input type="text" id="region" name="region" placeholder="Ex. Soavinandriana, Ampefy…" required>
+      </div>
+
+      <div class="field">
+        <label class="q" for="secteur">Si vous êtes dirigeant ou salarié, secteur d'activité </label>
+        <input type="text" id="secteur" name="secteur" placeholder="Ex. commerce, agriculture, transporteur…">
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="card step" data-step="2">
+      <div class="chapter-tag">Chapitre I</div>
+      <h2 class="step-title">Connaissances générales</h2>
+
+      <div class="field">
+        <label class="q">Connaissez-vous la notion d'audit comptable ? <span class="req">*</span></label>
+        <div class="options">
+          <label class="opt"><input type="radio" name="connait_audit" value="Oui" required><span>Oui</span></label>
+          <label class="opt"><input type="radio" name="connait_audit" value="Un peu"><span>Un peu</span></label>
+          <label class="opt"><input type="radio" name="connait_audit" value="Non"><span>Non</span></label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="q">Connaissez-vous vos obligations fiscales (déclarations, paiements) ? <span class="req">*</span></label>
+        <div class="options">
+          <label class="opt"><input type="radio" name="connait_obligations" value="Oui" required><span>Oui</span></label>
+          <label class="opt"><input type="radio" name="connait_obligations" value="Partiellement"><span>Partiellement</span></label>
+          <label class="opt"><input type="radio" name="connait_obligations" value="Non"><span>Non</span></label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="q">Connaissez-vous l'importance de l'impôt (à quoi il sert, pourquoi il est nécessaire) ? <span class="req">*</span></label>
+        <div class="options">
+          <label class="opt"><input type="radio" name="connait_importance_impot" value="Oui" required><span>Oui</span></label>
+          <label class="opt"><input type="radio" name="connait_importance_impot" value="Un peu"><span>Un peu</span></label>
+          <label class="opt"><input type="radio" name="connait_importance_impot" value="Non"><span>Non</span></label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="q">Selon vous, classer sur cinq (05) l'utilité de l'audit comptable pour la fiabilité d'une entreprise<span class="req">*</span></label>
+        <div class="scale">
+          <label><input type="radio" name="utilite_audit" value="1" required><span>1</span></label>
+          <label><input type="radio" name="utilite_audit" value="2"><span>2</span></label>
+          <label><input type="radio" name="utilite_audit" value="3"><span>3</span></label>
+          <label><input type="radio" name="utilite_audit" value="4"><span>4</span></label>
+          <label><input type="radio" name="utilite_audit" value="5"><span>5</span></label>
+        </div>
+        <div class="scale-labels"><span>Pas utile</span><span>Très utile</span></div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="card step" data-step="3">
+      <div class="chapter-tag">Chapitre II</div>
+      <h2 class="step-title">Accompagnement par un professionnel</h2>
+
+      <div class="field">
+        <label class="q">Êtes-vous actuellement accompagné par un agent un comptable ou cabinet d'audit? <span class="req">*</span></label>
+        <div class="options">
+          <label class="opt"><input type="radio" name="accompagne" value="Oui" required><span>Oui</span></label>
+          <label class="opt"><input type="radio" name="accompagne" value="Non"><span>Non</span></label>
+        </div>
+      </div>
+
+      <!-- Branche : accompagné -->
+      <div class="branch" data-show-if="accompagne=Oui">
+        <div class="field">
+          <label class="q">Vos documents comptables transmis sont-ils toujours complets et à jour ? <span class="req">*</span></label>
+          <div class="options">
+            <label class="opt"><input type="radio" name="documents_complets" value="Oui"><span>Oui</span></label>
+            <label class="opt"><input type="radio" name="documents_complets" value="Non"><span>Non</span></label>
+            <label class="opt"><input type="radio" name="documents_complets" value="Partiellement"><span>Partiellement</span></label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="q">Depuis combien de temps travaillez-vous avec ce professionnel ? <span class="req">*</span></label>
+          <div class="options">
+            <label class="opt"><input type="radio" name="duree_accompagnement" value="Moins d'1 an"><span>Moins d'1 an</span></label>
+            <label class="opt"><input type="radio" name="duree_accompagnement" value="1 à 3 ans"><span>1 à 3 ans</span></label>
+            <label class="opt"><input type="radio" name="duree_accompagnement" value="Plus de 3 ans"><span>Plus de 3 ans</span></label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="q">Comment évaluez-vous sa fiabilité (précision, respect des délais, conseils) ? <span class="req">*</span></label>
+          <div class="scale">
+            <label><input type="radio" name="fiabilite_professionnel" value="1"><span>1</span></label>
+            <label><input type="radio" name="fiabilite_professionnel" value="2"><span>2</span></label>
+            <label><input type="radio" name="fiabilite_professionnel" value="3"><span>3</span></label>
+            <label><input type="radio" name="fiabilite_professionnel" value="4"><span>4</span></label>
+            <label><input type="radio" name="fiabilite_professionnel" value="5"><span>5</span></label>
+          </div>
+          <div class="scale-labels"><span>Peu fiable</span><span>Très fiable</span></div>
+        </div>
+
+        <div class="field">
+          <label class="q">Vous informe-t-il régulièrement de vos obligations fiscales à venir ? <span class="req">*</span></label>
+          <div class="options">
+            <label class="opt"><input type="radio" name="informe_obligations" value="Oui"><span>Oui</span></label>
+            <label class="opt"><input type="radio" name="informe_obligations" value="Non"><span>Non</span></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Branche : non accompagné -->
+      <div class="branch" data-show-if="accompagne=Non">
+        <div class="field">
+          <label class="q">Quelle est la raison de ne faites-vous pas appel à un professionnel ? <span class="req">*</span></label>
+          <div class="options">
+            <label class="opt"><input type="radio" name="raison_non_accompagne" value="Coût trop élevé"><span>Coût trop élevé</span></label>
+            <label class="opt"><input type="radio" name="raison_non_accompagne" value="Je gère moi-même"><span>Je gère moi-même</span></label>
+            <label class="opt"><input type="radio" name="raison_non_accompagne" value="Pas nécessaire selon moi"><span>Pas nécessaire selon moi</span></label>
+            <label class="opt"><input type="radio" name="raison_non_accompagne" value="Autre"><span>Autre</span></label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="q">Envisageriez-vous de faire appel à un professionnel à l'avenir ? <span class="req">*</span></label>
+          <div class="options">
+            <label class="opt"><input type="radio" name="envisage_accompagnement" value="Oui"><span>Oui</span></label>
+            <label class="opt"><input type="radio" name="envisage_accompagnement" value="Non"><span>Non</span></label>
+            <label class="opt"><input type="radio" name="envisage_accompagnement" value="Peut-être"><span>Peut-être</span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="card step" data-step="4">
+      <div class="chapter-tag">Chapitre III</div>
+      <h2 class="step-title">Paiement de l'impôt</h2>
+
+      <div class="field">
+        <label class="q">Avez-vous déjà eu à régler une charge fiscale (impôt, taxe) pour cette exercice? <span class="req">*</span></label>
+        <div class="options">
+          <label class="opt"><input type="radio" name="charge_fiscale" value="Oui" required><span>Oui</span></label>
+          <label class="opt"><input type="radio" name="charge_fiscale" value="Non"><span>Non</span></label>
+        </div>
+      </div>
+
+      <div class="branch" data-show-if="charge_fiscale=Oui">
+        <div class="field">
+          <label class="q">Avez-vous réglé cette charge fiscale au bon moment (dans les délais) ? <span class="req">*</span></label>
+          <div class="options">
+            <label class="opt"><input type="radio" name="regle_a_temps" value="Oui"><span>Oui</span></label>
+            <label class="opt"><input type="radio" name="regle_a_temps" value="Non"><span>Non</span></label>
+          </div>
+        </div>
+
+        <div class="branch" data-show-if="regle_a_temps=Non">
+          <div class="field">
+            <label class="q">Pourquoi ce retard ?</label>
+            <div class="options">
+              <label class="opt"><input type="checkbox" name="raison_retard" value="Manque de moyens financiers au moment voulu"><span>Manque de moyens financiers au moment voulu</span></label>
+              <label class="opt"><input type="checkbox" name="raison_retard" value="Oubli ou manque d'information sur l'échéance"><span>Oubli ou manque d'information sur l'échéance</span></label>
+              <label class="opt"><input type="checkbox" name="raison_retard" value="Procédure de paiement trop complexe"><span>Procédure de paiement trop complexe</span></label>
+              <label class="opt"><input type="checkbox" name="raison_retard" value="Autre raison"><span>Autre raison</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="q" for="suggestion_retard">Une suggestion pour vous aider à mieux respecter les délais à l'avenir ? (facultatif)</label>
+            <textarea id="suggestion_retard" name="suggestion_retard" placeholder="Votre avis nous intéresse…"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="card step" data-step="5">
+      <div class="chapter-tag">Clôture</div>
+      <h2 class="step-title">Vos remarques</h2>
+
+      <div class="field">
+        <label class="q" for="suggestions">Avez-vous des suggestions pour améliorer l'audit comptable et la conformité fiscale à Madagascar ?</label>
+        <textarea id="suggestions" name="suggestions" placeholder="Votre avis nous intéresse…"></textarea>
+      </div>
+
+      <div class="field">
+        <label class="q" for="name">Nom et prénom pour enregistrer vos renseignement</label>
+        <input type="name" id="email" name="email" placeholder="Nom et prénom ou raison social">
+        <div class="hint">Laissez vide si vous préférez rester totalement anonyme.</div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button type="button" id="btn-prev" class="ghost" disabled>← Précédent</button>
+      <button type="button" id="btn-next" class="primary">Suivant →</button>
+      <button type="submit" id="btn-submit" class="primary" style="display:none;">Envoyer mes réponses</button>
+    </div>
+    <div class="error-msg" id="error-msg">Certaines réponses obligatoires sont manquantes — elles sont surlignées en rouge ci-dessus.</div>
+  </form>
+
+  <div id="confirm">
+    <svg class="stamp-big" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="60" cy="60" r="52" fill="none" stroke="#7C9473" stroke-width="2"/>
+      <circle cx="60" cy="60" r="44" fill="none" stroke="#7C9473" stroke-width="1"/>
+      <text x="60" y="57" text-anchor="middle" font-family="Spectral, serif" font-weight="600" font-size="15" fill="#7C9473">MERCI</text>
+      <text x="60" y="74" text-anchor="middle" font-family="Spectral, serif" font-weight="600" font-size="13" fill="#7C9473">ENVOYÉ</text>
+    </svg>
+    <h2>Réponses enregistrées</h2>
+    <p>Merci d'avoir pris le temps de répondre à cette enquête. Votre participation est précieuse pour ce travail de recherche.</p>
+  </div>
+
+  <footer class="sitefoot">Questionnaire réalisé dans le cadre d'un mémoire universitaire <br>Copyright Tiavina-RANDRIANOMENA    034 46 204 43           fb:Tia-vina Rnd</footer>
+</div>
+
+<script>
+  const steps = Array.from(document.querySelectorAll('.step'));
+  let current = 0;
+  const total = steps.length;
+
+  const folioLabel = document.getElementById('folio-label');
+  const folioFill = document.getElementById('folio-fill');
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+  const btnSubmit = document.getElementById('btn-submit');
+  const errorMsg = document.getElementById('error-msg');
+
+  function renderStep(){
+    steps.forEach((s,i)=> s.classList.toggle('active', i===current));
+    folioLabel.textContent = `Folio ${current+1} / ${total}`;
+    folioFill.style.width = `${((current+1)/total)*100}%`;
+    btnPrev.disabled = current === 0;
+    btnNext.style.display = current === total-1 ? 'none' : 'inline-block';
+    btnSubmit.style.display = current === total-1 ? 'inline-block' : 'none';
+    errorMsg.style.display = 'none';
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function updateBranches(){
+    document.querySelectorAll('.branch[data-show-if]').forEach(branch=>{
+      const [name, value] = branch.dataset.showIf.split('=');
+      const checked = document.querySelector(`input[name="${name}"]:checked`);
+      const show = !!checked && checked.value === value;
+      branch.style.display = show ? 'block' : 'none';
+    });
+  }
+
+  function markField(fieldEl, isInvalid){
+    fieldEl.classList.toggle('invalid', isInvalid);
+    let msg = fieldEl.querySelector('.field-error');
+    if(isInvalid){
+      if(!msg){
+        msg = document.createElement('div');
+        msg.className = 'field-error';
+        msg.textContent = 'Merci de remplir ce champ avant de continuer.';
+        fieldEl.appendChild(msg);
+      }
+    }
+  }
+
+  function validateStep(){
+    const stepEl = steps[current];
+    const fields = stepEl.querySelectorAll('.field');
+    let firstInvalid = null;
+    let allValid = true;
+
+    fields.forEach(fieldEl=>{
+      if(fieldEl.offsetParent === null){ return; } // champ masqué (branche inactive) : ignoré
+      const reqMark = fieldEl.querySelector('.q .req');
+      if(!reqMark){ markField(fieldEl, false); return; }
+
+      const radios = fieldEl.querySelectorAll('input[type=radio]');
+      const textInput = fieldEl.querySelector('input[type=text], input[type=email]');
+      let ok = true;
+
+      if(radios.length){
+        ok = Array.from(radios).some(r=>r.checked);
+      } else if(textInput){
+        ok = !!textInput.value.trim();
+      }
+
+      markField(fieldEl, !ok);
+      if(!ok){
+        allValid = false;
+        if(!firstInvalid) firstInvalid = fieldEl;
+      }
+    });
+
+    if(firstInvalid){
+      firstInvalid.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+    return allValid;
+  }
+
+  document.querySelectorAll('.opt').forEach(opt=>{
+    const input = opt.querySelector('input');
+    input.addEventListener('change', ()=>{
+      const group = input.name;
+      document.querySelectorAll(`input[name="${group}"]`).forEach(i=>{
+        i.closest('.opt').classList.toggle('checked', i.checked);
+      });
+      const fieldEl = opt.closest('.field');
+      if(fieldEl) markField(fieldEl, false);
+      updateBranches();
+    });
+  });
+  document.querySelectorAll('.scale label').forEach(lab=>{
+    const input = lab.querySelector('input');
+    input.addEventListener('change', ()=>{
+      const group = input.name;
+      document.querySelectorAll(`input[name="${group}"]`).forEach(i=>{
+        i.closest('label').classList.toggle('checked', i.checked);
+      });
+      const fieldEl = lab.closest('.field');
+      if(fieldEl) markField(fieldEl, false);
+    });
+  });
+  document.querySelectorAll('.field input[type=text], .field input[type=email]').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      const fieldEl = inp.closest('.field');
+      if(fieldEl && inp.value.trim()) markField(fieldEl, false);
+    });
+  });
+
+  btnNext.addEventListener('click', ()=>{
+    if(!validateStep()){ errorMsg.style.display='block'; return; }
+    current = Math.min(current+1, total-1);
+    renderStep();
+  });
+  btnPrev.addEventListener('click', ()=>{
+    current = Math.max(current-1, 0);
+    renderStep();
+  });
+
+  const form = document.getElementById('survey-form');
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    if(!validateStep()){ errorMsg.style.display='block'; return; }
+
+    btnSubmit.disabled = true;
+    btnSubmit.textContent = 'Envoi en cours…';
+
+    const data = new FormData(form);
+
+    try{
+      // Remplacez l'URL ci-dessous par votre propre endpoint Formspree
+      // (voir les instructions fournies avec ce fichier)
+      const response = await fetch('https://formspree.io/f/xojgavzl', {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      });
+      if(response.ok){
+        form.style.display = 'none';
+        document.querySelector('.folio-bar').style.display = 'none';
+        document.getElementById('confirm').style.display = 'block';
+      } else {
+        throw new Error('Envoi échoué');
+      }
+    } catch(err){
+      errorMsg.textContent = "L'envoi a échoué. Vérifiez votre connexion et réessayez, ou contactez Tiavina RANDRIANOMENA.";
+      errorMsg.style.display = 'block';
+      btnSubmit.disabled = false;
+      btnSubmit.textContent = 'Envoyer mes réponses';
+    }
+  });
+
+  updateBranches();
+  renderStep();
+</script>
+</body>
+</html>
